@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Weightlifting Exercise Quality Analysis</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+</head>
+
+<body>
+<h1>Weightlifting Exercise Quality Analysis</h1>
+
+<h2>Introduction</h2>
+
+<p><strong>As electronic motion and orientation recording sensors have become smaller, less expensive and more reliable&ndash;and therefore more prevalent, data analysts have increasingly used available sensor data to try to identify the types of movements and activities in which sensor-wearing people are engaged.  Less research though, has been done with respect to trying to assess the quality of such movements and activities.  If machine learning can distinguish among correct and incorrect forms of movement, inexpensive automated feedback might be made available in the areas of athletic training, ergonomics, injury rehabilitation, acclimation to prosthetic limbs, etc.</strong></p>
+
+<p><strong>Groupware@LES (<a href="http://groupware.les.inf.puc-rio.br/har">http://groupware.les.inf.puc-rio.br/har</a>) took a preliminary step toward that end by performing lab research in which they collected body movement and orientation data from six participants who were wearing movement sensors while performing weightlifting exercises.  Participants, under the direction of weightlifting trainers, used either the proper form to perform single-arm barbell curls, or else they used (intentionally) one of four clearly identifiable, incorrect forms.  We used the data set resulting from this research (available on Groupware&#39;s website) to predict the different correct and incorrect forms of exercise based on the movement sensor output data.</strong></p>
+
+<hr/>
+
+<h2>Load Libraries</h2>
+
+<pre><code class="r">library(rpart)
+</code></pre>
+
+<pre><code>## Warning: package &#39;rpart&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code class="r">library(rpart.plot)
+</code></pre>
+
+<pre><code>## Warning: package &#39;rpart.plot&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code class="r">library(randomForest)
+</code></pre>
+
+<pre><code>## Warning: package &#39;randomForest&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code>## randomForest 4.6-7
+## Type rfNews() to see new features/changes/bug fixes.
+</code></pre>
+
+<pre><code class="r">library(caret)
+</code></pre>
+
+<pre><code>## Warning: package &#39;caret&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code>## Loading required package: lattice
+</code></pre>
+
+<pre><code>## Warning: package &#39;lattice&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code>## Loading required package: ggplot2
+</code></pre>
+
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code class="r">library(FactoMineR)
+</code></pre>
+
+<pre><code>## Warning: package &#39;FactoMineR&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code class="r">library(Hmisc)
+</code></pre>
+
+<pre><code>## Warning: package &#39;Hmisc&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code>## Loading required package: grid
+## Loading required package: survival
+</code></pre>
+
+<pre><code>## Warning: package &#39;survival&#39; was built under R version 3.0.2
+</code></pre>
+
+<pre><code>## Loading required package: splines
+## 
+## Attaching package: &#39;survival&#39;
+## 
+## The following object is masked from &#39;package:caret&#39;:
+## 
+##     cluster
+## 
+## Loading required package: Formula
+## 
+## Attaching package: &#39;Hmisc&#39;
+## 
+## The following object is masked from &#39;package:randomForest&#39;:
+## 
+##     combine
+## 
+## The following object is masked from &#39;package:base&#39;:
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units
+</code></pre>
+
+<hr/>
+
+<h2>Data Collection</h2>
+
+<p><strong>The data were downloaded from <a href="http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises">http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises</a> on June 8, 2014.  Data consist, in part, of 2 observation/subject variables and 5 time-based variables.  Those data were not used in our analyses, as they are obviously impractical predictors in real-world scenarios.  The criterion variable in our analysis is a 5-level class variable that identifies either the correct form of exercise or else one of four incorrect forms.  Potential predictor data of those 5 levels include 152 different sensor measurement fields.  Interested readers can find a detailed description of those measurements on the Groupware website cited above.</strong></p>
+
+<hr/>
+
+<h2>Processing</h2>
+
+<p><strong>Download the training and test data sets.  Remove the &#39;X&#39; and &#39;user_name&#39; fields.  Remove the 3 timestamp and 2 window fields.</strong>   </p>
+
+<pre><code class="r">getwd()
+</code></pre>
+
+<pre><code>## [1] &quot;C:/Users/Shaun/Desktop/Machine Learning/R code&quot;
+</code></pre>
+
+<pre><code class="r">
+data0 = read.csv(&quot;wleTrain.csv&quot;)
+data1 = data0[, 8:160]
+dim(data1)
+</code></pre>
+
+<pre><code>## [1] 19622   153
+</code></pre>
+
+<pre><code class="r">
+test0 = read.csv(&quot;wleTest.csv&quot;)
+test1 = test0[, 8:160]
+dim(test1)
+</code></pre>
+
+<pre><code>## [1]  20 153
+</code></pre>
+
+<hr/>
+
+<h2>Exploratory Analyses</h2>
+
+<p><strong>Exploratory analyses were performed by examining tables and plots of the data. Based on these examinations, it was determined that no transformations of variables were likely to be beneficial.  Given the categorical nature of the criterion variable and the (in some cases) skewed and multimodal distributions of predictor variables, it was determined that decision trees were likely to perform well.  As a result of exploratory analyses, missing and extreme values were addressed; sparse variables were managed; and principal components were investigated.</strong></p>
+
+<p><strong>We removed all fields from the training set for which &gt; 50% of the training set entries were missing, NA or #DIV/0!  We removed the same fields from the test set without looking at that data set.  This is not necessary per se, because a prediction function could simply ignore the unused variables.  However, before making our final predictions on the test set, we may need to find and remedy NAs, extreme values, etc.  Removing the sparse training set fields from the test set now might make that process simpler later.</strong> </p>
+
+<pre><code class="r">data3 = data1
+test3 = test1
+for (i in 153:3) {
+    column = data3[, i]
+    notMissing = column[!column == &quot;&quot;]
+    notMissing = notMissing[!notMissing == &quot;#DIV/0!&quot;]
+    notMissing = notMissing[!(is.na(notMissing))]
+    len = length(notMissing)
+    if (len &lt; 9811) {
+        data3 = data3[-i]
+        test3 = test3[-i]
+    }
+}
+</code></pre>
+
+<p><strong>Look for NAs.</strong></p>
+
+<pre><code class="r">summary(data3)
+summary(test3)
+</code></pre>
+
+<p><strong>OUTPUT SUPPRESSED; but there were no NAs remaining.</strong>  </p>
+
+<p><strong>Explore boxplots of all variables against the &#39;classe&#39; variable.</strong></p>
+
+<pre><code class="r">par(mfrow = c(2, 2))
+for (j in 1:52) {
+    plot(data3$classe, data3[, j], main = j)
+}
+</code></pre>
+
+<p><strong>OUTPUT SUPPRESSED.</strong>  </p>
+
+<p><strong>Explore distributions of all variables.</strong></p>
+
+<pre><code class="r">par(mfrow = c(2, 2))
+for (m in 1:52) {
+    hist(data3[, m], main = m)
+}
+
+for (n in 1:52) {
+    plot(data3[, n], main = n)
+}
+</code></pre>
+
+<p><strong>OUTPUT SUPPRESSED</strong>  </p>
+
+<p><strong>Charts identify the following outliers of possible interest:</strong>  </p>
+
+<p><strong>Observation No.:</strong> <em>Field Number(s)</em><br/>
+<strong>5373:</strong>  <em>30:34, 43:46, 48</em><br/>
+<strong>9274:</strong>  <em>38</em>  </p>
+
+<p><strong>During model selection, we ran alternate versions for comparison:  one using original values for the above outlying observations, and one in which those values were replaced with their respective field medians.</strong>  </p>
+
+<p><strong>Create a data set in which outliers are replaced by field medians.</strong></p>
+
+<pre><code class="r">data3OLs = data3
+data3OLs[5373, 30] = median(data3OLs[-5373, 30])
+data3OLs[5373, 31] = median(data3OLs[-5373, 31])
+data3OLs[5373, 32] = median(data3OLs[-5373, 32])
+data3OLs[5373, 33] = median(data3OLs[-5373, 33])
+data3OLs[5373, 34] = median(data3OLs[-5373, 34])
+data3OLs[5373, 43] = median(data3OLs[-5373, 43])
+data3OLs[5373, 44] = median(data3OLs[-5373, 44])
+data3OLs[5373, 45] = median(data3OLs[-5373, 45])
+data3OLs[5373, 46] = median(data3OLs[-5373, 46])
+data3OLs[5373, 48] = median(data3OLs[-5373, 48])
+
+data3OLs[9274, 38] = median(data3OLs[-9274, 38])
+</code></pre>
+
+<hr/>
+
+<p><strong>Look at distributions now that outliers are replaced.</strong></p>
+
+<pre><code class="r">par(mfrow = c(2, 2))
+for (p in 1:52) {
+    hist(data3OLs[, p], main = p)
+}
+
+for (q in 1:52) {
+    plot(data3OLs[, q], main = q)
+}
+</code></pre>
+
+<p><strong>OUTPUT SUPPRESSED</strong>  </p>
+
+<p><strong>Create separate training and validation sets from the data with outlying values included.</strong></p>
+
+<pre><code class="r">set.seed(1)
+split = createDataPartition(data3$classe, p = 0.7, list = F)
+trn = data3[split, ]
+dim(trn)
+</code></pre>
+
+<pre><code>## [1] 13737    53
+</code></pre>
+
+<pre><code class="r">vld = data3[-split, ]
+dim(vld)
+</code></pre>
+
+<pre><code>## [1] 5885   53
+</code></pre>
+
+<hr/>
+
+<p><strong>Look for principal components in the training set only.</strong></p>
+
+<pre><code class="r">pcas = princomp(trn[-53])
+par(mfrow = c(1, 1))
+plot(pcas, main = &quot;Components&#39; Proportion of Variance&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAMAAACR9g9NAAAAh1BMVEX9/v0AAAAAADkAAGUAOTkAOWUAOY8AZo8AZrU5AAA5ADk5AGU5OY85ZrU5j7U5j9plAABlADllAGVlOQBlZjlltf2POQCPOTmPOWWPjzmPj2WPtY+P27WP29qP2/21ZgC1tWW1/rW1/v2+vr7ajzna/rXa/tra/v39tWX924/9/rX9/tr9/v3j5xcoAAAALXRSTlP//////////////////////////////////////////////////////////wCl7wv9AAAACXBIWXMAAAsSAAALEgHS3X78AAANJ0lEQVR4nO2di3riyBFGV57EwdlJwJOF2WQT2HWYmNv7P1/UuqEGgQq5Mer+z/lmx7Oi3CV06FYVN/10AEl+evQOwGNAvCiIFwXxoiBeFMSLgnhREC8K4kVBvCiIFwXxoiBeFMSLgnhREC8K4kVBvCiIFwXxoiBeFMSLgnhREC8K4kUZl/jdLMuyaZixVvPmn+ts3oyeZfOLv9I1xm725a0vbPuSPS0Ph/2iGHuTPb97N1uG+HRGJX5TiMkmIcZaZZfEO0e3j2GJWxe7vgr10L0rYxKfz5ipO3rOzLqc+pvsL4vsy9vazdP94svvWVZMnurWky3z45Z8KPcAyqeiu7kR76Zi7mW/ePrFZekeptiSB5QPwnK6nkcemugiVzHJty/5TcUvbMoHWJno396WegT3a+1d/2TGJH774g7ffjF3dsqpX60BWSOzOMT1rdWWSR0/bbaU4ssp/vy+KSd5S3yx+WSY04H//I9G/HlCx6qVqxCfe17m92JyqBOXN/3Ih/C2HIdqxv70RWJM4jfN3d++5EdwN3tabvJDk0/buft3sSDkB3De3FpscafU4iGTT6a3Zkux/JaPpIZmqc+jJq0knQOXi3Z5jj9P6O3k8ZSwzm+ulpfiF8tx6nN8taXe5UL6vNn1zzrKFeMUvymOe34I3T/K4+WOernoTptbixnm5nG1MLiYakslLWstzJX4cgVetpJcGPgo/jyht5NH8flN/ysdulzlbtfiW1vKXZ5Wd/XGwiMQYxJ/XOpPxLsVslt8cU71xFdbShnuHH88prWxj4ivhz90ij+snn57mVZ5PfHHLc0ulycMxBdzoiruWkt9W/z5ilwdxWZNPxHv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" alt="plot of chunk pcas"/> </p>
+
+<pre><code class="r">prComps = prcomp(trn[-53])
+summary(prComps)
+</code></pre>
+
+<pre><code>## Importance of components:
+##                            PC1     PC2     PC3     PC4      PC5      PC6
+## Standard deviation     599.508 533.338 472.566 375.802 355.9132 254.7083
+## Proportion of Variance   0.264   0.209   0.164   0.104   0.0931   0.0477
+## Cumulative Proportion    0.264   0.473   0.637   0.741   0.8339   0.8816
+##                             PC7      PC8      PC9     PC10     PC11
+## Standard deviation     200.2772 172.6680 158.0272 118.1546 97.04912
+## Proportion of Variance   0.0295   0.0219   0.0184   0.0103  0.00692
+## Cumulative Proportion    0.9110   0.9329   0.9513   0.9615  0.96846
+##                            PC12     PC13     PC14     PC15     PC16
+## Standard deviation     89.76155 76.42946 68.17649 62.52676 56.72682
+## Proportion of Variance  0.00592  0.00429  0.00341  0.00287  0.00236
+## Cumulative Proportion   0.97438  0.97867  0.98208  0.98495  0.98732
+##                            PC17     PC18     PC19    PC20     PC21
+## Standard deviation     53.15882 49.97449 48.58656 42.0251 37.56842
+## Proportion of Variance  0.00208  0.00183  0.00173  0.0013  0.00104
+## Cumulative Proportion   0.98939  0.99123  0.99296  0.9943  0.99530
+##                            PC22     PC23    PC24     PC25     PC26
+## Standard deviation     34.77497 32.49778 30.9159 25.60663 23.55333
+## Proportion of Variance  0.00089  0.00078  0.0007  0.00048  0.00041
+## Cumulative Proportion   0.99619  0.99696  0.9977  0.99815  0.99855
+##                            PC27     PC28     PC29     PC30    PC31    PC32
+## Standard deviation     21.47775 20.52705 17.30548 15.13578 1.4e+01 9.96214
+## Proportion of Variance  0.00034  0.00031  0.00022  0.00017 1.4e-04 0.00007
+## Cumulative Proportion   0.99889  0.99920  0.99942  0.99959 1.0e+00 0.99981
+##                           PC33    PC34    PC35    PC36    PC37    PC38
+## Standard deviation     7.63846 7.23945 6.66527 6.22056 4.77682 3.73460
+## Proportion of Variance 0.00004 0.00004 0.00003 0.00003 0.00002 0.00001
+## Cumulative Proportion  0.99985 0.99989 0.99992 0.99995 0.99997 0.99998
+##                           PC39    PC40 PC41 PC42 PC43  PC44 PC45  PC46
+## Standard deviation     3.50600 3.35950 1.96 1.51 1.09 0.468 0.39 0.357
+## Proportion of Variance 0.00001 0.00001 0.00 0.00 0.00 0.000 0.00 0.000
+## Cumulative Proportion  0.99999 0.99999 1.00 1.00 1.00 1.000 1.00 1.000
+##                         PC47 PC48  PC49  PC50  PC51   PC52
+## Standard deviation     0.316 0.24 0.201 0.187 0.105 0.0369
+## Proportion of Variance 0.000 0.00 0.000 0.000 0.000 0.0000
+## Cumulative Proportion  1.000 1.00 1.000 1.000 1.000 1.0000
+</code></pre>
+
+<p><strong>Ten components each account for &gt;= 1% of the variance; and, collectively, 26 components can account for 99.9% of the variance.  If computation is expensive for the selected method of analysis, principal components may be a good option to reduce that expense.  This will be determined at a later stage.</strong>  </p>
+
+<h2>Statistical Modeling</h2>
+
+<p><strong>To relate correct and incorrect weightlifting forms to the sensor data, we performed a variety of random forest analyses as described below.  Model selection was based on: 1) comparing cross-validation accuracies across different versions of the predictor data set and across different random forest tuning parameters, and 2) comparing cross-validated models&#39; predictions on their respective validation sets.</strong> </p>
+
+<h2>Model Selection</h2>
+
+<p><strong>First, we fitted random forest models to the data set containing <em>unmodified</em> outliers.  We began with 5-fold cross-validation to save computational expense.  If resulting accuracies were unsatisfactory, we could have increased the number of folds and repeated the model fittings.</strong></p>
+
+<p><strong>We compared the accuracies of 2 models using 503 and 751 trees respectively.  If 751 trees demonstrated a substantial improvement over 503 trees, we would have fitted a model with 997 trees.  If that model had demonstrated additional improvement, we would have continued to increase the number of trees until the error rate stabilized.</strong></p>
+
+<pre><code class="r">set.seed(1)
+rf.k5.503 = train(classe ~ ., data = trn, method = &quot;rf&quot;, trControl = trainControl(method = &quot;cv&quot;, 
+    number = 5), ntree = 503)
+</code></pre>
+
+<pre><code>## Warning: package &#39;e1071&#39; was built under R version 3.0.3
+</code></pre>
+
+<pre><code>## 
+## Attaching package: &#39;e1071&#39;
+## 
+## The following object is masked from &#39;package:Hmisc&#39;:
+## 
+##     impute
+</code></pre>
+
+<pre><code class="r">rf.k5.503
+</code></pre>
+
+<pre><code>## Random Forest 
+## 
+## 13737 samples
+##    52 predictors
+##     5 classes: &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## 
+## Summary of sample sizes: 10990, 10989, 10989, 10990, 10990 
+## 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
+##   2     1         1      0.002        0.002   
+##   30    1         1      0.001        0.001   
+##   50    1         1      0.004        0.005   
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was mtry = 27.
+</code></pre>
+
+<pre><code class="r">
+set.seed(1)
+rf.k5.751 = train(classe ~ ., data = trn, method = &quot;rf&quot;, trControl = trainControl(method = &quot;cv&quot;, 
+    number = 5), ntree = 751)
+rf.k5.751
+</code></pre>
+
+<pre><code>## Random Forest 
+## 
+## 13737 samples
+##    52 predictors
+##     5 classes: &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## 
+## Summary of sample sizes: 10990, 10989, 10989, 10990, 10990 
+## 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
+##   2     1         1      0.002        0.002   
+##   30    1         1      0.001        0.001   
+##   50    1         1      0.005        0.006   
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was mtry = 27.
+</code></pre>
+
+<p><strong>We fitted a random forest model to the data set in which extreme values were replaced with field medians.  Given the comparable results using 503 and 751 trees in the above fittings of models, we initially used 503 trees here.  If results were not comparable to the prior models&#39; accuracies, we would have tested other settings.</strong>  </p>
+
+<p><strong>First, create training and validation sets.</strong>  </p>
+
+<pre><code class="r">set.seed(1)
+split = createDataPartition(data3OLs$classe, p = 0.7, list = F)
+trnOLs = data3OLs[split, ]
+dim(trnOLs)
+</code></pre>
+
+<pre><code>## [1] 13737    53
+</code></pre>
+
+<pre><code class="r">vldOLs = data3OLs[-split, ]
+dim(vldOLs)
+</code></pre>
+
+<pre><code>## [1] 5885   53
+</code></pre>
+
+<p><strong>Now run the cross-validation of the model.</strong></p>
+
+<pre><code class="r">rf.k5.OLs.503 = train(classe ~ ., data = trnOLs, method = &quot;rf&quot;, trControl = trainControl(method = &quot;cv&quot;, 
+    number = 5), ntree = 503)
+rf.k5.OLs.503
+</code></pre>
+
+<pre><code>## Random Forest 
+## 
+## 13737 samples
+##    52 predictors
+##     5 classes: &#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## 
+## Summary of sample sizes: 10990, 10990, 10989, 10990, 10989 
+## 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy  Kappa  Accuracy SD  Kappa SD
+##   2     1         1      0.001        0.002   
+##   30    1         1      0.001        0.002   
+##   50    1         1      0.005        0.006   
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was mtry = 2.
+</code></pre>
+
+<hr/>
+
+<h2>Compare Models on Their Respective Validation Sets</h2>
+
+<p><strong>Because all 3 models had perfect cross-validation accuracy on their respective training sets, we used the 2 models with 503 trees each to make predictions on their respective validation sets.  We decided to use the one with the better prediction accuracy to make predictions on the test set.  Computation time was not excessive for random forests models with 52 predictors, so we did not make any use of dimension reduction via principal components.</strong>   </p>
+
+<p><strong>First, predict on the validation set using the model based on <em>unmodified</em> outliers.</strong></p>
+
+<pre><code class="r">rf.k5.503.preds = predict(rf.k5.503, newdata = vld, type = &quot;raw&quot;)
+confusionMatrix(rf.k5.503.preds, vld$classe)
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 1671    7    0    0    0
+##          B    0 1129    5    0    1
+##          C    2    2 1018    4    1
+##          D    0    1    3  959    2
+##          E    1    0    0    1 1078
+## 
+## Overall Statistics
+##                                         
+##                Accuracy : 0.995         
+##                  95% CI : (0.993, 0.997)
+##     No Information Rate : 0.284         
+##     P-Value [Acc &gt; NIR] : &lt;2e-16        
+##                                         
+##                   Kappa : 0.994         
+##  Mcnemar&#39;s Test P-Value : NA            
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity             0.998    0.991    0.992    0.995    0.996
+## Specificity             0.998    0.999    0.998    0.999    1.000
+## Pos Pred Value          0.996    0.995    0.991    0.994    0.998
+## Neg Pred Value          0.999    0.998    0.998    0.999    0.999
+## Prevalence              0.284    0.194    0.174    0.164    0.184
+## Detection Rate          0.284    0.192    0.173    0.163    0.183
+## Detection Prevalence    0.285    0.193    0.175    0.164    0.184
+## Balanced Accuracy       0.998    0.995    0.995    0.997    0.998
+</code></pre>
+
+<p><strong>Second, predict on the validation set using the model based on <em>replaced</em> outliers.</strong></p>
+
+<pre><code class="r">rf.k5.OLs.503.preds = predict(rf.k5.OLs.503, newdata = vldOLs, type = &quot;raw&quot;)
+confusionMatrix(rf.k5.OLs.503.preds, vldOLs$classe)
+</code></pre>
+
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 1671    2    0    0    0
+##          B    1 1137    8    0    0
+##          C    1    0 1016    9    0
+##          D    0    0    2  953    2
+##          E    1    0    0    2 1080
+## 
+## Overall Statistics
+##                                         
+##                Accuracy : 0.995         
+##                  95% CI : (0.993, 0.997)
+##     No Information Rate : 0.284         
+##     P-Value [Acc &gt; NIR] : &lt;2e-16        
+##                                         
+##                   Kappa : 0.994         
+##  Mcnemar&#39;s Test P-Value : NA            
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity             0.998    0.998    0.990    0.989    0.998
+## Specificity             1.000    0.998    0.998    0.999    0.999
+## Pos Pred Value          0.999    0.992    0.990    0.996    0.997
+## Neg Pred Value          0.999    1.000    0.998    0.998    1.000
+## Prevalence              0.284    0.194    0.174    0.164    0.184
+## Detection Rate          0.284    0.193    0.173    0.162    0.184
+## Detection Prevalence    0.284    0.195    0.174    0.163    0.184
+## Balanced Accuracy       0.999    0.998    0.994    0.994    0.999
+</code></pre>
+
+<p><strong>There was no substantial difference between the value metrics of the two models&#39; predictions.  Because of that, along with the fact that 10 out of the 11 outlying values came from a single observation/subject [and thus were unlikley to represent a true association between an extreme field measurement and a particular criterion level(s)], we decided to make our test-set predictions with the random forest model trained on median-replaced extreme values.</strong></p>
+
+<p><strong>Based on the 95% confidence interval for accuracy for that model, we expect to have an out-of-sample error rate of 0.3 - 0.7%.  Given the use of a random forest model and given the simplicity of the analyses, we do not believe that overfitting occurred and thus do not believe that there is any reason to increase our expected error rate beyond that indicated by the accuracy confidence interval.</strong>    </p>
+
+<hr/>
+
+<h2>Results</h2>
+
+<p><strong>Make the predictions on the test set.</strong></p>
+
+<pre><code class="r">rf.k5.OLs.503.preds = predict(rf.k5.OLs.503, newdata = test3, type = &quot;raw&quot;)
+rf.k5.OLs.503.preds
+</code></pre>
+
+<pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E
+</code></pre>
+
+<p><strong>Format the predictions for submission.</strong></p>
+
+<pre><code class="r">answers = rf.k5.OLs.503.preds
+pml_write_files = function(x) {
+    n = length(x)
+    for (i in 1:n) {
+        filename = paste0(&quot;problem_id_&quot;, i, &quot;.txt&quot;)
+        write.table(x[i], file = filename, quote = FALSE, row.names = FALSE, 
+            col.names = FALSE)
+    }
+}
+pml_write_files(answers)
+</code></pre>
+
+<p><strong>OUTPUT SUPPRESSED</strong>  </p>
+
+<p><strong>Predictions were submitted to the Practical Machine Learning (<a href="https://class.coursera.org/predmachlearn-002">https://class.coursera.org/predmachlearn-002</a>) course submission page and were graded as all being correct.</strong></p>
+
+<h2>Conclusions</h2>
+
+<p><strong>Prediction of the five classes of correct or incorrect weightlifting form from body movement and orientation sensor data proved to be a simple and straightforward task.  No complex data manipulations, tranformations, etc. were required; and only basic machine learning schemes were used.  With those simple methods, we were able to achieve a prediction accuracy of 100%.</strong></p>
+
+<p><strong>Our analyses, however, were limited in several ways, thus we cannot be confident that they will generalize to a broader scope.  First, the prediction accuracy of 100% was achieved on a very small sample, 20 cases.  Second, the training sample was limited, consisting of only six subjects (all male and of a limited age range) and only a few sets of exercises by each subject.  Further research would have to be done with a larger and more diverse group of subjects.</strong></p>
+
+<p><strong>Also, the research involved only one type of weightlifting exercise, so additional research should be done to include a variety of activities.  Our analyses were also limited by the fact that research subjects <em>intentionally</em> used incorrect form, and thus may have used exaggeratedly incorrect form.  It may be substantially more difficult to detect <em>unintentional</em>, and thus more subtly different, incorrect form.</strong></p>
+
+</body>
+
+</html>
+
