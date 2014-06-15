@@ -204,7 +204,7 @@ confusionMatrix(rf.k5.OLs.503.preds, vldOLs$classe)
 ```
 **There was no substantial difference between the value metrics of the two models' predictions.  Because of that, along with the fact that 10 out of the 11 outlying values came from a single observation/subject [and thus were unlikley to represent a true association between an extreme field measurement and a particular criterion level(s)], we decided to make our test-set predictions with the random forest model trained on median-replaced extreme values.**
 
-**Based on the 95% confidence interval for accuracy for that model, we expect to have an out-of-sample error rate of 0.3 - 0.7%.  Given the use of a random forest model and given the simplicity of the analyses, we do not believe that overfitting occurred and thus do not believe that there is any reason to increase our expected error rate beyond that indicated by the accuracy confidence interval.**    
+**Based on the 95% confidence interval for accuracy for that model, we expect to have an out-of-sample error rate of 0.3 - 0.7%.  Given the use of a random forest model with cross-validation and given the simplicity of the analyses, we do not believe that overfitting occurred and thus do not believe that there is any reason to increase our expected error rate beyond that indicated by the accuracy confidence interval.**    
 
 ------
 
