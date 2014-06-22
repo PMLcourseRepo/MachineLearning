@@ -1,0 +1,255 @@
+Weightlifting Exercise Quality Analysis
+========================================================
+
+## Introduction
+**As electronic motion and orientation recording sensors have become smaller, less expensive and more reliable--and therefore more prevalent, data analysts have increasingly used available sensor data to try to identify the types of movements and activities in which sensor-wearing people are engaged.  Less research though, has been done with respect to trying to assess the quality of such movements and activities.  If machine learning can distinguish among correct and incorrect forms of movement, inexpensive automated feedback might be made available in the areas of athletic training, ergonomics, injury rehabilitation, acclimation to prosthetic limbs, etc.**
+     
+**Groupware@LES (http://groupware.les.inf.puc-rio.br/har) took a preliminary step toward that end by performing lab research in which they collected body movement and orientation data from six participants who were wearing movement sensors while performing weightlifting exercises.  Participants, under the direction of weightlifting trainers, used either the proper form to perform single-arm barbell curls, or else they used (intentionally) one of four clearly identifiable, incorrect forms.  We used the data set resulting from this research (available on Groupware's website) to predict the different correct and incorrect forms of exercise based on the movement sensor output data.**
+
+------
+## Load Libraries
+
+```{r}
+library(rpart); library(rpart.plot); library(randomForest)
+library(caret); library(FactoMineR); library(Hmisc)
+```
+
+```{r setup, include=FALSE}
+opts_chunk$set(cache=TRUE)
+```
+
+------
+## Data Collection
+**The data were downloaded from http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises on June 8, 2014.  Data consist, in part, of 2 observation/subject variables and 5 time-based variables.  Those data were not used in our analyses, as they are obviously impractical predictors in real-world scenarios.  The criterion variable in our analysis is a 5-level class variable that identifies either the correct form of exercise or else one of four incorrect forms.  Potential predictor data of those 5 levels include 152 different sensor measurement fields.  Interested readers can find a detailed description of those measurements on the Groupware website cited above.**
+     
+------
+## Processing
+**Download the training and test data sets.  Remove the 'X' and 'user_name' fields.  Remove the 3 timestamp and 2 window fields.**   
+
+```{r getDatasets}
+getwd()
+
+data0=read.csv("wleTrain.csv")
+data1=data0[,8:160]
+dim(data1)
+
+test0=read.csv("wleTest.csv")
+test1=test0[,8:160]
+dim(test1)                              
+```
+------
+
+## Exploratory Analyses
+**Exploratory analyses were performed by examining tables and plots of the data. Based on these examinations, it was determined that no transformations of variables were likely to be beneficial.  Given the categorical nature of the criterion variable and the (in some cases) skewed and multimodal distributions of predictor variables, it was determined that decision trees were likely to perform well.  As a result of exploratory analyses, missing and extreme values were addressed; sparse variables were managed; and principal components were investigated.**
+     
+**We removed all fields from the training set for which > 50% of the training set entries were missing, NA or #DIV/0!  We removed the same fields from the test set without looking at that data set.  This is not necessary per se, because a prediction function could simply ignore the unused variables.  However, before making our final predictions on the test set, we may need to find and remedy NAs, extreme values, etc.  Removing the sparse training set fields from the test set now might make that process simpler later.** 
+
+```{r removeSparseVars}
+data3=data1
+test3=test1
+for(i in 153:3)   {
+  column=data3[,i]
+  notMissing=column[!column=='']
+  notMissing=notMissing[!notMissing=="#DIV/0!"]
+  notMissing=notMissing[!(is.na(notMissing))]
+  len=length(notMissing)
+  if(len<9811)   {
+    data3=data3[-i]
+    test3=test3[-i]
+  }
+}
+```
+
+**Look for NAs.**
+     
+```{r, eval=FALSE}
+summary(data3)
+summary(test3)
+```
+**OUTPUT SUPPRESSED; but there were no NAs remaining.**  
+
+**Explore boxplots of all variables against the 'classe' variable.**
+     
+```{r, eval=FALSE}
+par(mfrow=c(2,2))
+for(j in 1:52)   {
+  plot(data3$classe, data3[,j], main=j)
+}
+```
+**OUTPUT SUPPRESSED.**  
+
+**Explore distributions of all variables.**
+
+```{r, eval=FALSE}
+par(mfrow=c(2,2))
+for(m in 1:52)   {
+  hist(data3[,m], main=m)
+}
+
+for(n in 1:52)   {
+  plot(data3[,n], main=n)
+}
+```
+**OUTPUT SUPPRESSED**  
+
+**Charts identify the following outliers of possible interest:**  
+
+**Observation No.:** *Field Number(s)*    
+**5373:**  *30:34, 43:46, 48*  
+**9274:**  *38*  
+
+**During model selection, we ran alternate versions for comparison:  one using original values for the above outlying observations, and one in which those values were replaced with their respective field medians.**  
+  
+
+**Create a data set in which outliers are replaced by field medians.**
+
+```{r replaceOLs}
+data3OLs=data3
+data3OLs[5373,30]=median(data3OLs[-5373,30]); data3OLs[5373,31]=median(data3OLs[-5373,31])
+data3OLs[5373,32]=median(data3OLs[-5373,32]); data3OLs[5373,33]=median(data3OLs[-5373,33])
+data3OLs[5373,34]=median(data3OLs[-5373,34]); data3OLs[5373,43]=median(data3OLs[-5373,43])
+data3OLs[5373,44]=median(data3OLs[-5373,44]); data3OLs[5373,45]=median(data3OLs[-5373,45])
+data3OLs[5373,46]=median(data3OLs[-5373,46]); data3OLs[5373,48]=median(data3OLs[-5373,48])
+
+data3OLs[9274,38]=median(data3OLs[-9274,38])
+```
+------
+**Look at distributions now that outliers are replaced.**
+
+```{r, eval=FALSE}
+par(mfrow=c(2,2))
+for(p in 1:52)   {
+  hist(data3OLs[,p], main=p)
+}
+
+for(q in 1:52)   {
+  plot(data3OLs[,q], main=q)
+}
+```
+**OUTPUT SUPPRESSED**  
+
+**Create separate training and validation sets from the data with outlying values included.**
+
+```{r splitOriginalTrain}
+set.seed(1)
+split=createDataPartition(data3$classe, p=.7, list=F)
+trn=data3[split,]
+dim(trn)                                         
+vld=data3[-split,]
+dim(vld)
+```
+------
+**Look for principal components in the training set only.**
+
+```{r pcas, cache=TRUE, fig.width=7, fig.height=6}
+pcas=princomp(trn[-53])
+par(mfrow=c(1,1))
+plot(pcas, main="Components' Proportion of Variance")
+prComps=prcomp(trn[-53])
+summary(prComps)
+```
+**Ten components each account for >= 1% of the variance; and, collectively, 26 components can account for 99.9% of the variance.  If computation is expensive for the selected method of analysis, principal components may be a good option to reduce that expense.  This will be determined at a later stage.**  
+
+## Statistical Modeling
+**To relate correct and incorrect weightlifting forms to the sensor data, we performed a variety of random forest analyses as described below.  Model selection was based on: 1) comparing cross-validation accuracies across different versions of the predictor data set and across different random forest tuning parameters, and 2) comparing cross-validated models' predictions on their respective validation sets.** 
+
+## Model Selection
+**First, we fitted random forest models to the data set containing *unmodified* outliers.  We began with 5-fold cross-validation to save computational expense.  If resulting accuracies were unsatisfactory, we could have increased the number of folds and repeated the model fittings.**
+     
+**We compared the accuracies of 2 models using 503 and 751 trees respectively.  If 751 trees demonstrated a substantial improvement over 503 trees, we would have fitted a model with 997 trees.  If that model had demonstrated additional improvement, we would have continued to increase the number of trees until the error rate stabilized.**
+
+```{r rfk5.503, cache=TRUE}
+set.seed(1)
+rf.k5.503=train(classe~., data=trn, method="rf", trControl=trainControl(method="cv", number=5), ntree=503)
+rf.k5.503
+
+set.seed(1)
+rf.k5.751=train(classe~., data=trn, method="rf", trControl=trainControl(method="cv", number=5), ntree=751)
+rf.k5.751
+```
+
+**We fitted a random forest model to the data set in which extreme values were replaced with field medians.  Given the comparable results using 503 and 751 trees in the above fittings of models, we initially used 503 trees here.  If results were not comparable to the prior models' accuracies, we would have tested other settings.**  
+
+**First, create training and validation sets.**  
+```{r splitOLset, cache=TRUE}
+set.seed(1)
+split=createDataPartition(data3OLs$classe, p=.7, list=F)
+trnOLs=data3OLs[split,]
+dim(trnOLs)                                         
+vldOLs=data3OLs[-split,]
+dim(vldOLs)
+```
+
+**Now run the cross-validation of the model.**
+```{r rf.k5.OLs.503, cache=TRUE}
+rf.k5.OLs.503=train(classe~., data=trnOLs, method="rf", trControl=trainControl(method="cv", number=5), ntree=503)
+rf.k5.OLs.503
+```
+------
+
+## Compare Models on Their Respective Validation Sets
+**Because all 3 models had perfect cross-validation accuracy on their respective training sets, we used the 2 models with 503 trees each to make predictions on their respective validation sets.  We decided to use the one with the better prediction accuracy to make predictions on the test set.  Computation time was not excessive for random forests models with 52 predictors, so we did not make any use of dimension reduction via principal components.**   
+
+**First, predict on the validation set using the model based on *unmodified* outliers.**
+```{r originalPreds, cache=TRUE}
+rf.k5.503.preds=predict(rf.k5.503, newdata=vld, type="raw")
+confusionMatrix(rf.k5.503.preds, vld$classe)
+```
+
+**Second, predict on the validation set using the model based on *replaced* outliers.**
+```{r OLsPreds, cache=TRUE}
+rf.k5.OLs.503.preds=predict(rf.k5.OLs.503, newdata=vldOLs, type="raw")
+confusionMatrix(rf.k5.OLs.503.preds, vldOLs$classe)
+```
+**Look at variable importance plots as another way to compare the two models.  First, the model based on original data.**  
+```{r varImpPlot1, fig.width=7, fig.height=6}
+varImpPlot(rf.k5.503$finalModel)
+```
+
+**Second, the model based on extreme values replaced with medians.**
+```{r varImpPlot2, fig.width=7, fig.height=6}
+varImpPlot(rf.k5.OLs.503$finalModel)
+```
+
+**There was no substantial difference between the value metrics of the two models' predictions.  Because of that, along with the fact that 10 out of the 11 outlying values came from a single observation/subject [and thus were unlikley to represent a true association between an extreme field measurement and a particular criterion level(s)], we decided to make our test-set predictions with the random forest model fitted to the version of the training set with median-replaced extreme values.  Also, the variable importance plot for that set/model showed a smoother distribution curve.**
+
+**Fit the model using the out-of-bag error estimate as the measure of accuracy.**
+```{r rf.OLs.503.OOB, cache=TRUE}
+rf.OLs.503.OOB=train(classe~., data=trnOLs, method="rf", trControl=trainControl(method="oob"), ntree=503)
+rf.OLs.503.OOB
+```
+
+**Note that in the results directly above, accuracy based on the out-of-bag error estimate was 1.00.  Obviously, we did not base our expectation of out-of-bag error on that datum.  Rather, we based it on the output from the model fit using 5-fold cross-validation.  Given the 95% confidence interval for accuracy for that model, we expect to have an out-of-sample error rate of 0.3 - 0.7%.  Given the use of a random forest model with cross-validation and given the simplicity of the analyses, we do not believe that overfitting occurred and thus do not believe that there is any reason to increase our expected error rate beyond that indicated by the accuracy confidence interval.**    
+
+------
+
+## Results
+**Make the predictions on the test set.**
+
+```{r}
+rf.k5.OLs.503.preds=predict(rf.k5.OLs.503, newdata=test3, type="raw")
+rf.k5.OLs.503.preds
+```
+
+**Format the predictions for submission.**
+```{r, eval=FALSE}
+answers=rf.k5.OLs.503.preds
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+pml_write_files(answers)
+```
+**OUTPUT SUPPRESSED**  
+
+**Predictions were submitted to the Practical Machine Learning (https://class.coursera.org/predmachlearn-002) course submission page and were graded as all being correct.**
+     
+## Conclusions  
+**Prediction of the five classes of correct or incorrect weightlifting form from body movement and orientation sensor data proved to be a simple and straightforward task.  No complex data manipulations, tranformations, etc. were required; and only basic machine learning schemes were used.  With those simple methods, we were able to achieve a prediction accuracy of 100%.**
+
+**Our analyses, however, were limited in several ways, thus we cannot be confident that they will generalize to a broader scope.  First, the prediction accuracy of 100% was achieved on a very small sample, 20 cases.  Second, the training sample was limited, consisting of only six subjects (all male and of a limited age range) and only a few sets of exercises by each subject.  Further research would have to be done with a larger and more diverse group of subjects.**
+
+**Also, the research involved only one type of weightlifting exercise, so additional research should be done to include a variety of activities.  Our analyses were also limited by the fact that research subjects *intentionally* used incorrect form, and thus may have used exaggeratedly incorrect form.  It may be substantially more difficult to detect *unintentional*, and thus more subtly different, incorrect form.**
